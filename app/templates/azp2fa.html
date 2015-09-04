@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block scripts -%}
+{{super()}}
+<script>
+// Handle button
+$('#collapser').on('click', function(e) {
+    e.preventDefault();
+    $('#collapse-me').collapse('toggle');
+});
+// Handle clicks within div
+$('#collapse-me').on('click', function(e) {
+  $(this).collapse('toggle');
+});
+</script>
+{%- endblock scripts %}
+
+{% block content_center %}
+<h2>Forced Alignment via <a href="https://github.com/myedibleenso/AZP2FA"><code>(AZ)P2FA</code></a></h2>
+{% endblock content_center %}
+{% block page_content %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+
+<div class='lead row'>
+<p>Welcome to my <a href="http://www.phon.ox.ac.uk/jcoleman/BAAP_ASR.pdf">forced aligner</a> demo!<br>
+This forced aligner is a <a href="https://github.com/myedibleenso/AZP2FA">modified version</a> of <a href="https://www.ling.upenn.edu/phonetics/p2fa/">P2FA</a>, a wrapper for <a href="http://htk.eng.cam.ac.uk/">htk</a><br>
+Upload a <code>.wav</code> file and <a href="{{ url_for('serve_file', filename='transcript_example.txt') }}">corresponding transcript</a> with each word on its own line:</p>
+<div id='collapse-me', class='accordion-body collapse'>
+<samp>
+TO<br>
+BE<br>
+LOVED<br>
+BY<br>
+UNICORNS<br>
+IS<br>
+THE<br>
+GREATEST<br>
+GIFT<br>
+OF<br>
+ALL<br>
+</samp>
+</div>
+<button type="button" class="btn-info", id="collapser">see an example <i class="fa fa-arrow-up"></i></button>
+<p>The aligner will generate a <a href="http://www.fon.hum.uva.nl/praat/">Praat</a> <code>TextGrid</code>.</p>
+</div>
+
+<div class=' form-group form-horizontal'>
+{{ wtf.quick_form(form, form_type="horizontal", horizontal_columns=('sm', 2, 4)) }}
+</div>
+{% endblock page_content %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block page_content -%}
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Projects<br>
+                <small>research and tinkering</small>
+            </h1>
+        </div>
+    </div>
+
+    <!-- proj. row -->
+    <div class="row">
+        <div class="col-md-5 portfolio-item">
+            <a href="http://river.sista.arizona.edu:8080/bigmech/demo">
+                <img class="img-responsive" src="{{ url_for('static', filename='images/rule-example.png') }}" alt="">
+            </a>
+
+            <h3>
+                <a href="http://river.sista.arizona.edu:8080/bigmech/demo">Odin (<strong>o</strong>pen-<strong>d</strong>omain <strong>in</strong>former)</a>
+            </h3>
+
+            <p>A rule-based information extraction language based on linguistic features.  This is a collaborative project with <a href="https://github.com/marcovzla">Marco Valenzuela</a>. Odin allows you to define traversal patterns over syntactic dependency graphs.</p>
+        </div>
+        <div class="col-md-5 portfolio-item">
+            <a href="http://parsertongue.com/forced-alignment">
+                <img class="img-responsive" src="{{ url_for('static', filename='images/textgrid-example.png') }}" alt="">
+            </a>
+
+            <h3>
+                <a href="http://parsertongue.com/forced-alignment">AZP2FA (forced aligner)</a>
+            </h3>
+
+            <p>A forced aligner using <code>Python</code> and <code>htk</code>.  A <a href="https://github.com/myedibleenso/AZP2FA">fork</a> of the <a href="http://www.ling.upenn.edu/phonetics/p2fa/">Penn Phonetics Lab Forced Aligner</a> (<code>P2FA</code>).</p>
+        </div>
+    </div>
+
+    <!-- proj. row -->
+    <div class="row">
+        <div class="col-md-5 portfolio-item">
+            <a href="https://github.com/sistanlp/processors">
+                <img class="img-responsive" src="{{ url_for('static', filename='images/unicorn-example.png') }}" alt="">
+            </a>
+
+            <h3>
+                <a href="https://github.com/sistanlp/processors"><code>Processors</code></a>
+            </h3>
+
+            <p>I am a contributor to <a href="http://www.surdeanu.info/mihai/">Mihai Surdeanu's</a> <code>Scala</code> library for natural language processing.</p>
+        </div>
+        <div class="col-md-5 portfolio-item">
+            <a href="http://minimalism.linguistics.arizona.edu/~sandiway/mpp/mm.html">
+                <img class="img-responsive" src="{{ url_for('static', filename='images/minimalism-example.png') }}" alt="">
+            </a>
+
+            <h3>
+                <a href="#">Japanese Scrambling</a>
+            </h3>
+
+            <p>A <a href="http://en.wikipedia.org/wiki/Minimalist_program">Minimalist</a> account for Japanese <a href="http://en.wikipedia.org/wiki/Scrambling_(linguistics)">scrambling</a> modeled using <a href="http://dingo.sbs.arizona.edu/~sandiway/">Sandiway Fong's</a> <a href="http://minimalism.linguistics.arizona.edu/~sandiway/mpp/mm.html"><code>Minimalist Machine</code></a>.</p>
+        </div>
+    </div>
+
+    <!-- Projects Row -->
+        <div class="row">
+            <div class="col-md-5 portfolio-item">
+                <a href="http://www.parsertongue.com/apil/draw">
+                    <img class="img-responsive" src="{{ url_for('static', filename='images/tracer-example.png') }}" alt="">
+                </a>
+
+                <h3>
+                    <a href="http://www.parsertongue.com/apil/draw">Tongue Tracing</a>
+                </h3>
+
+                <p>A <code>html5</code> + <code>javascript</code> method for tracing tongue contours in ultrasound images captured during speech.  Written for use by <a href="http://www.u.arizona.edu/~dba/">Diana Archangeli's</a> </a> <a href="http://apil.arizona.edu/">Arizona Phonological Imaging Lab</a></p>
+            </div>
+            <div class="col-md-5 portfolio-item">
+                <a href="#">
+                    <img class="img-responsive" src="{{ url_for('static', filename='images/snoop.png') }}" alt="">
+                </a>
+
+                <h3>
+                    <a href="#">kikimimi</a>
+                </h3>
+
+                <p>A simple <code>python</code> bot that uses <code>praw</code> to scour <a href="http://www.reddit.com/">reddit</a> for posts made by celebrities.  The retrieved text is then run through an NLP pipeline using <code>nltk</code> for the heavy lifting + some custom post-processing for sentence boundary and tokenization correction.  I used <a href="https://github.com/myedibleenso/kikimimi">kikimimi</a> to start the Snoop corpus.</p>
+            </div>
+        </div>
+
+  
+    <hr>
+</div>
+
+{%- endblock page_content %}
