@@ -3,10 +3,11 @@ from werkzeug import secure_filename
 import os
 import logging
 import json
-from app import app#, db
-#from .models import User
+from app import app
+from wordvectors import *
 from forms import AZP2FAForm, CSVForm
 from config import basedir
+from wordvectors import WordVector, ScoredPair, w2v_collection
 
 UPLOADS_DIR = os.path.join(basedir, app.config['UPLOAD_FOLDER'])
 
@@ -27,15 +28,16 @@ def azp2fa():
 
 @app.route('/csv', methods =['POST'])
 def csv():
-    print "I'm in csv()"
     scored_rows = []
     for r in request.files["csv_file"]:
         row = r.strip().split(",")
-        w1 = row[0]
-        w2 = row[-1]
-        scored_rows.append(w2)
-    #flash("Got {0}'s {1} trace data for {2} files!".format(data['subject-id'], data['project-id'], num_files))
-    scored_data = "\n".join(scored_rows)
+        w1 = w2v_collection.retrieve_wordvector(row[0])
+        w2 = w2v_collection.retrieve_wordvector(row[-1])
+        scored_rows.append((w1.word, w2.word, str(w1.cosine_similarity(w2))))
+    #flash("Generated {0} similarity scores for {1}".format(len(scored_rows), request.files["csv_file"]))
+    scored_data = "\n".join(",".join(row) for row in scored_rows)
+    #return render_template('csv.html',
+    #                       title='word vector similarity', score_data)
     return Response(scored_data,
                        mimetype="csv/plain",
                        headers={"Content-Disposition":

@@ -11,8 +11,24 @@
     {% endfor %}
 </div>
 {#{ wtf.quick_form(form, form_type="horizontal", horizontal_columns=('sm', 2, 4)) }#}
-<form method="POST" enctype="multipart/form-data" action="csv">
+<div class="container">
+<form method="POST" class="form-group" enctype="multipart/form-data" action="csv">
+  <label for="csv_file">CSV file input</label>
   <input type="file" name="csv_file">
-  <input type="submit" value="Calculate Similarity Scores">
+  <p class="help-block">Select a two-column csv file for similarity evaluation.</p>
+  <div class="checkbox">
+  <label>
+    <input type="checkbox" checked='checked' value="">
+    Compute using <code>w2v</code> from the <a href="https://catalog.ldc.upenn.edu/LDC2003T05">English Gigaword</a>
+  </label>
+  </div>
+  <div class="checkbox disabled">
+  <label>
+    <input type="checkbox" value="" disabled>
+    Use something else
+  </label>
+  </div>
+  <button type="submit" class="btn btn-primary">Calculate Similarity Scores</button>
 </form>
+<div class="container">
 {% endblock content %}
