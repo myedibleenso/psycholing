@@ -3,9 +3,10 @@ from werkzeug import secure_filename
 import os
 import logging
 import json
+from markdown import markdown
 from app import app
 from wordvectors import *
-from forms import AZP2FAForm, CSVForm
+from forms import CSVForm
 from config import basedir
 from wordvectors import WordVector, ScoredPair, w2v_collection
 
@@ -17,36 +18,45 @@ def index():
     return render_template('index.html',
                            title='Welcome')
 
-@app.route('/azp2fa', methods = ['GET', 'POST'])
-def azp2fa():
-    form = AZP2FAForm()
-    if request.method == 'POST' and form.validate():
-            form = request.form
-
-    return render_template('azp2fa.html',
-                           title='azp2fa', form=form)
-
 @app.route('/csv', methods =['POST'])
 def csv():
-    scored_rows = []
-    for r in request.files["csv_file"]:
-        row = r.strip().split(",")
-        w1 = w2v_collection.retrieve_wordvector(row[0])
-        w2 = w2v_collection.retrieve_wordvector(row[-1])
-        scored_rows.append((w1.word, w2.word, str(w1.cosine_similarity(w2))))
-    #flash("Generated {0} similarity scores for {1}".format(len(scored_rows), request.files["csv_file"]))
-    scored_data = "\n".join(",".join(row) for row in scored_rows)
-    #return render_template('csv.html',
-    #                       title='word vector similarity', score_data)
-    return Response(scored_data,
-                       mimetype="csv/plain",
-                       headers={"Content-Disposition":
-                                    "attachment;filename={0}".format('w2v-scores.csv')})
+    fname = request.files["csv_file"].filename
+    if fname.lower().endswith(".csv"):
+        scored_rows = []
+        for r in request.files["csv_file"]:
+            # get the word pair in columns 1 & 2
+            row = r.strip().split(",")
+            # the query will use lowercased words
+            w1 = row[0].lower()
+            w2 = row[-1].lower()
+            # query the db for the words
+            wv1 = w2v_collection.retrieve_wordvector(w1)
+            wv2 = w2v_collection.retrieve_wordvector(w2)
+            # if either word was missing from the db,
+            # a score cannot be calculated :(
+            if not wv1 or not wv2:
+                score = "UNKNOWN"
+            else:
+                score = str(wv1.cosine_similarity(wv2))
+                scored_rows.append((w1, w2, score))
+            print "cos({0}, {1}) = {2}".format(w1,w2,score)
+
+        scored_data = "\n".join(",".join(list(row)) for row in scored_rows)
+        outname = '{0}-{1}-scores.csv'.format(fname[:-4], 'w2v')
+        return Response(scored_data,
+                        mimetype="csv/plain",
+                        headers={"Content-Disposition": "attachment;filename={0}".format(outname)})
+
+    else:
+        flash(Markup(markdown("#### No `.csv` file was found")))
+        return render_template('csv.html')
+
 
 @app.route('/<path:filename>')
 def basic_template(filename):
-    return render_template('{0}.html'.format(filename),
-                            title=filename.title())
+    template = '{0}.html'.format(filename)
+    #print "attempting to load {0}".format(template)
+    return render_template(template)
 
 @app.errorhandler(404)
 def page_not_found(error):

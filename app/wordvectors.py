@@ -41,12 +41,18 @@ class WordVectorCollection(object):
 
     def __init__(self, wv_collection):
         self.collection = wv_collection
+        self.timeout = 100
 
     def query_collection(self, query):
         return self.collection.find(query)
 
     def retrieve_wordvector(self, word):
-        wv = self.collection.find_one({"word": word})
+        try:
+            # attempt a lowercase query
+            wv = self.collection.find_one({"word": word.lower()}, max_time_ms=self.timeout)
+        except:
+            print "query for '{0}' exceeded {1} ms timeout...".format(word, self.timeout)
+            wv = None
         return WordVector(wv["word"], wv["vector"], wv.get("neighbors", dict())) if wv else None
 
     def wordvector_from_db(self, dbobj):
