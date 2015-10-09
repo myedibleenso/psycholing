@@ -6,9 +6,9 @@ import json
 from markdown import markdown
 from app import app
 from wordvectors import *
-from forms import CSVForm
+from forms import PairwiseCSVForm, KNNCSVForm
 from config import basedir
-from wordvectors import WordVector, ScoredPair, w2v_collection
+from wordvectors import WordVector, WordVectorCollection, ScoredPair, w2v_collection
 
 UPLOADS_DIR = os.path.join(basedir, app.config['UPLOAD_FOLDER'])
 
@@ -18,8 +18,8 @@ def index():
     return render_template('index.html',
                            title='Welcome')
 
-@app.route('/csv', methods =['POST'])
-def csv():
+@app.route('/pairwise-comparison', methods =['POST'])
+def pairwise_csv():
     fname = request.files["csv_file"].filename
     if fname.lower().endswith(".csv"):
         scored_rows = []
@@ -49,8 +49,37 @@ def csv():
 
     else:
         flash(Markup(markdown("#### No `.csv` file was found")))
-        return render_template('csv.html')
+        return render_template('pairwise-comparison-csv.html')
 
+@app.route('/knn', methods =['POST'])
+def knn_csv():
+    K = WordVectorCollection.K
+    fname = request.files["csv_file"].filename
+    if fname.lower().endswith(".csv"):
+        neighbor_rows = []
+        # create header
+        neighbor_rows.append(",".join(["WORD"] + ["NN{0},NN{0}_SIM".format(i) for i in range(1, K+1)]))
+        for r in request.files["csv_file"]:
+            # get the word pair in columns 1 & 2
+            row = r.strip().split(",")
+            if len(row) != 1:
+                flash(Markup(markdown("#### Not a single-column `.csv` file")))
+                return render_template('knn-csv.html')
+
+            # the query will use lowercased word
+            w = row[0].lower()
+            neighbors = w2v_collection.compare_all(w)
+            if neighbors:
+                neighbors = "{0},{1}".format(w,",".join("{0},{1}".format(w,s) for (w,s) in neighbors))
+                neighbor_rows.append(neighbors)
+        outname = '{0}-{1}-knn.csv'.format(fname[:-4], 'w2v')
+        return Response("\n".join(neighbor_rows),
+                        mimetype="csv/plain",
+                        headers={"Content-Disposition": "attachment;filename={0}".format(outname)})
+
+    else:
+        flash(Markup(markdown("#### No `.csv` file was found")))
+        return render_template('knn-csv.html')
 
 @app.route('/<path:filename>')
 def basic_template(filename):
