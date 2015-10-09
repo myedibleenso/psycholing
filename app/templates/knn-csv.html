@@ -12,10 +12,10 @@
 </div>
 {#{ wtf.quick_form(form, form_type="horizontal", horizontal_columns=('sm', 2, 4)) }#}
 <div class="container">
-<form method="POST" class="form-group" enctype="multipart/form-data" action="csv">
+<form method="POST" class="form-group" enctype="multipart/form-data" action="knn">
   <label for="csv_file">CSV file input</label>
   <input type="file" name="csv_file">
-  <p class="help-block">Select a two-column csv file for similarity evaluation.</p>
+  <p class="help-block">Select a single-column csv file for KNN evaluation.</p>
   <div class="checkbox">
   <label>
     <input type="checkbox" checked='checked' value="">
@@ -28,7 +28,7 @@
     Use something else
   </label>
   </div>
-  <button type="submit" class="btn btn-primary">Calculate Similarity Scores</button>
+  <button type="submit" class="btn btn-primary">Get neighbors</button>
 </form>
 <div class="container">
 {% endblock content %}
