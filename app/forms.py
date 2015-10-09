@@ -12,12 +12,19 @@ class AZP2FAForm(Form):
     #recaptcha = RecaptchaField()
     submit = SubmitField('Get TextGrid', id='get-textgrid')
 
-class CSVForm(Form):
+class PairwiseCSVForm(Form):
     csv_file = FileField('csv file',
                          validators=[FileRequired(),
-                                     FileAllowed(['csv', 'CSV'], 'please select a .csv file')])
+                                     FileAllowed(['csv', 'CSV'], 'please select a two-column .csv file')])
     #recaptcha = RecaptchaField()
-    submit = SubmitField('Get Similarity Scores', id='csv-submit')
+    submit = SubmitField('Get Similarity Scores', id='pairwisecsv-submit')
+
+class KNNCSVForm(Form):
+    csv_file = FileField('csv file',
+                         validators=[FileRequired(),
+                                     FileAllowed(['csv', 'CSV'], 'please select a single-column .csv file')])
+    #recaptcha = RecaptchaField()
+    submit = SubmitField('Get K Nearest Neighbors', id='knncsv-submit')
 
 class LoginForm(Form):
     provider = SelectField(u'Log in with...',
