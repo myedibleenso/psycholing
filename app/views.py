@@ -71,12 +71,11 @@ def knn_csv():
             # TODO: rename this method
             neighbors = w2v_collection.compare_all(w)
             if neighbors:
-                try:
-                    neighbors = "{0},{1}".format(w,",".join("{0},{1}".format(w,s) for (w,s) in neighbors))
-                    neighbor_rows.append(neighbors)
-                except:
-                    print("neighbors == {0}".format(neighbors))
-                    neighbor_rows.append("{0},".format(w))
+                neighbors = "{0},{1}".format(w,",".join("{0},{1}".format(w,s) for (w,s) in neighbors))
+                neighbor_rows.append(neighbors)
+            else:
+                #flash(Markup(markdown("#### `{0}` not found".format(w))), 'error')
+                neighbor_rows.append(w)
         # return the scored file
         outname = '{0}-{1}-knn.csv'.format(fname[:-4], 'w2v')
         return Response("\n".join(neighbor_rows),
