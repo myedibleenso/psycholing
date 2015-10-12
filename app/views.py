@@ -56,22 +56,24 @@ def knn_csv():
     K = WordVectorCollection.K
     fname = request.files["csv_file"].filename
     if fname.lower().endswith(".csv"):
-        neighbor_rows = []
         # create header
-        neighbor_rows.append(",".join(["WORD"] + ["NN{0},NN{0}_SIM".format(i) for i in range(1, K+1)]))
+        header = ",".join(["WORD"] + ["NN{0},NN{0}_SIM".format(i) for i in range(1, K+1)])
+        neighbor_rows = [header]
         for r in request.files["csv_file"]:
-            # get the word pair in columns 1 & 2
+            # we should only have a single column
             row = r.strip().split(",")
             if len(row) != 1:
                 flash(Markup(markdown("#### Not a single-column `.csv` file")))
                 return render_template('knn-csv.html')
-
-            # the query will use lowercased word
+            # the query will use the lowercased word
             w = row[0].lower()
+            # find the nearest K neighbors
+            # TODO: rename this method
             neighbors = w2v_collection.compare_all(w)
             if neighbors:
                 neighbors = "{0},{1}".format(w,",".join("{0},{1}".format(w,s) for (w,s) in neighbors))
                 neighbor_rows.append(neighbors)
+        # return the scored file
         outname = '{0}-{1}-knn.csv'.format(fname[:-4], 'w2v')
         return Response("\n".join(neighbor_rows),
                         mimetype="csv/plain",
