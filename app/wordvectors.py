@@ -124,3 +124,15 @@ class WordVectorCollection(object):
 client = MongoClient()
 db = client.wordvectors
 w2v_collection = WordVectorCollection(db.w2v)
+
+# MP solution (TODO)
+#import multiprocessing as mp
+#nproc = multiprocessing.cpu_count()
+#pool = mp.Pool(processes=nproc)
+#pool.map(cosine_similarity, xrange(1000))
+# def compare_terms(w1, w2, N=8):
+#     """
+#     Compute the cosine similarity of two WordVector instances
+#     """
+#     sim = np.dot(w1.vector, w2.vector) / (np.linalg.norm(w1.vector) * np.linalg.norm(w2.vector))
+#     return float('{score:.{dec}f}'.format(score=sim, dec=N))

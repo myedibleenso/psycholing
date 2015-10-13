@@ -5,6 +5,7 @@ import logging
 import json
 from markdown import markdown
 from app import app
+from utils import *
 from wordvectors import *
 from forms import PairwiseCSVForm, KNNCSVForm
 from config import basedir
@@ -23,12 +24,13 @@ def pairwise_csv():
     fname = request.files["csv_file"].filename
     if fname.lower().endswith(".csv"):
         scored_rows = []
-        for r in request.files["csv_file"]:
+        # iterate over the lines in the uploaded file
+        for r in get_lines(request.files["csv_file"]):
+            # casefold terms in the line
+            row = clean_line(r)
             # get the word pair in columns 1 & 2
-            row = r.strip().split(",")
-            # the query will use lowercased words
-            w1 = row[0].lower()
-            w2 = row[-1].lower()
+            w1 = row[0]
+            w2 = row[-1]
             # query the db for the words
             wv1 = w2v_collection.retrieve_wordvector(w1)
             wv2 = w2v_collection.retrieve_wordvector(w2)
@@ -53,27 +55,33 @@ def pairwise_csv():
 
 @app.route('/knn', methods =['POST'])
 def knn_csv():
+    # The number of neighbors to be retrieved
     K = WordVectorCollection.K
     fname = request.files["csv_file"].filename
     if fname.lower().endswith(".csv"):
         # create header
         header = ",".join(["WORD"] + ["NN{0},NN{0}_SIM".format(i) for i in range(1, K+1)])
         neighbor_rows = [header]
-        for r in request.files["csv_file"]:
+        # iterate over the lines in the uploaded file
+        for line in get_lines(request.files["csv_file"]):
+            # casefold terms in the line
+            row = clean_line(line)
             # we should only have a single column
-            row = r.strip().split(",")
             if len(row) != 1:
                 flash(Markup(markdown("#### Not a single-column `.csv` file")))
                 return render_template('knn-csv.html')
             # the query will use the lowercased word
-            w = row[0].lower()
+            w = row[0]
+            print("word: {0}".format(w))
             # find the nearest K neighbors
             # TODO: rename this method
             neighbors = w2v_collection.compare_all(w)
             if neighbors:
                 neighbors = "{0},{1}".format(w,",".join("{0},{1}".format(w,s) for (w,s) in neighbors))
+                print("\tneighbors:\t{0}".format(", ".join(neighbors.split(",")[1::2])))
                 neighbor_rows.append(neighbors)
             else:
+                print("No neighbors found for {0}".format(w))
                 #flash(Markup(markdown("#### `{0}` not found".format(w))), 'error')
                 neighbor_rows.append(w)
         # return the scored file
