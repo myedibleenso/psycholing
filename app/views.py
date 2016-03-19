@@ -5,11 +5,11 @@ import logging
 import json
 from markdown import markdown
 from app import app
-from utils import *
-from wordvectors import *
-from forms import PairwiseCSVForm, KNNCSVForm
+from .utils import *
+from .wordvectors import *
+from .forms import PairwiseCSVForm, KNNCSVForm
 from config import basedir
-from wordvectors import WordVector, WordVectorCollection, ScoredPair, w2v_collection
+from .wordvectors import WordVector, WordVectorCollection, ScoredPair, w2v_collection
 
 UPLOADS_DIR = os.path.join(basedir, app.config['UPLOAD_FOLDER'])
 
@@ -41,7 +41,7 @@ def pairwise_csv():
             else:
                 score = str(wv1.cosine_similarity(wv2))
                 scored_rows.append((w1, w2, score))
-            print "cos({0}, {1}) = {2}".format(w1,w2,score)
+            print("cos({0}, {1}) = {2}".format(w1,w2,score))
 
         scored_data = "\n".join(",".join(list(row)) for row in scored_rows)
         outname = '{0}-{1}-scores.csv'.format(fname[:-4], 'w2v')
